@@ -1,0 +1,50 @@
+#!/usr/bin/python
+from os import path
+from sys import argv
+from sys import exit as sysexit
+from ConfigParser import ConfigParser as cp
+
+## Make sure our environment is setup correctly
+base_dir = path.realpath(path.dirname(__file__))
+config_file = path.join(base_dir, 'vget.cfg')
+if not path.exists(config_file):
+	sysexit("No config file found at {}".format(config_file))
+
+## Load up the config file
+cfg = cp()
+cfg.read(config_file)
+
+def show_sections():
+	global cfg
+	data = ' '.join(cfg.sections())
+	return data
+
+def show_options(section):
+	global cfg
+	data = []
+	if cfg.has_section(section):
+		for option in cfg.options(section):
+			data.append(option)
+
+	return ' '.join(data)
+
+def show_values(section, option):
+	global cfg
+	data = []
+	return cfg.get(section, option)
+			
+
+if __name__ == '__main__':
+	args = argv[1:]
+
+	if len(args) == 0:
+		print show_sections()
+		## Section mode
+
+	elif len(args) == 1:
+		print show_options(args[0])
+		## Options mode
+
+	elif len(args) >= 2:
+		print show_values(section=args[0], option=args[1])
+		## Value mode
